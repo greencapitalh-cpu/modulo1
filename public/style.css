@@ -1,0 +1,89 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 2rem;
+}
+
+h1 {
+  color: #0052cc;
+}
+
+form {
+  margin: 1rem 0;
+}
+
+input[type="file"] {
+  padding: 8px;
+}
+
+button {
+  background: #0052cc;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #003d99;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: white;
+  border-radius: 6px;
+  margin: 8px auto;
+  padding: 10px;
+  width: 300px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Modal preview --- */
+#previewModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#previewModal.hidden {
+  display: none;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 80%;
+  height: 80%;
+}
+
+#previewFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+#closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
