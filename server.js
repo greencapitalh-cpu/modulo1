@@ -43,21 +43,22 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 // 📥 VER / DESCARGAR archivo
-app.get("/file/:id", async (req, res) => {
+app.get("/download/:id", async (req, res) => {
   try {
-    const id = new mongoose.Types.ObjectId(req.params.id);
-    const file = await db.collection("uploads.files").findOne({ _id: id });
-    if (!file) return res.status(404).send("File not found");
+    const files = await bucket.find({ _id: new ObjectId(req.params.id) }).toArray();
+    if (!files || files.length === 0) return res.status(404).send("Archivo no encontrado");
 
+    const file = files[0];
     res.set({
-      "Content-Type": file.contentType || "application/octet-stream",
-      "Content-Disposition": `inline; filename="${file.filename}"`
+      "Content-Type": file.contentType,
+      "Content-Disposition": `attachment; filename="${file.filename}"`,
     });
 
-    const downloadStream = bucket.openDownloadStream(id);
-    downloadStream.pipe(res);
-  } catch {
-    res.status(404).send("File not found");
+    const readStream = bucket.openDownloadStream(file._id);
+    readStream.pipe(res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error al descargar el archivo");
   }
 });
 
