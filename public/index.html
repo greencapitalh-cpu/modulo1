@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mongo File Uploader</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>📤 Mongo File Uploader</h1>
+
+  <form id="uploadForm">
+    <input type="file" name="file" id="fileInput" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>📁 Uploaded Files</h2>
+  <ul id="fileList"></ul>
+
+  <!-- Modal preview -->
+  <div id="previewModal" class="hidden">
+    <div class="modal-content">
+      <span id="closeBtn">&times;</span>
+      <iframe id="previewFrame" src="" frameborder="0"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const list = document.getElementById("fileList");
+    const modal = document.getElementById("previewModal");
+    const frame = document.getElementById("previewFrame");
+    const closeBtn = document.getElementById("closeBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const res = await fetch("/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      alert(`Uploaded: ${data.filename}`);
+      loadFiles();
+    });
+
+    closeBtn.onclick = () => modal.classList.add("hidden");
+    window.onclick = (e) => { if (e.target === modal) modal.classList.add("hidden"); };
+
+    async function loadFiles() {
+      const res = await fetch("/files");
+      const files = await res.json();
+      list.innerHTML = "";
+      files.forEach(f => {
+        const li = document.createElement("li");
+        const fileType = f.contentType || "";
+        const previewable = fileType.includes("image") || fileType.includes("pdf");
+
+        li.innerHTML = `
+          <strong>${f.filename}</strong> (${(f.length / 1024).toFixed(1)} KB)
+          <a href="/file/${f._id}" target="_blank">Download</a>
+          ${previewable ? `<button data-id="${f._id}" class="preview-btn">Preview</button>` : ""}
+        `;
+        list.appendChild(li);
+      });
+
+      document.querySelectorAll(".preview-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          frame.src = `/file/${id}`;
+          modal.classList.remove("hidden");
+        });
+      });
+    }
+
+    loadFiles();
+  </script>
+</body>
+</html>
